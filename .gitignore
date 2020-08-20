@@ -1,7 +1,7 @@
 game-client/win-bin
-game-client/lunux-bin
+game-client/linux-bin
 game-server/main.exe
-game-server/assets/build
+game-server/assets/Build
 game-client/source/Library
 
 
