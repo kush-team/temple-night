@@ -4,16 +4,19 @@ import (
     "fmt"
     "log"
     "net/http"
+    "math/rand"
     "github.com/googollee/go-socket.io"
     "github.com/satori/go.uuid"
 )
-
 
 type Game struct {
     Id              string          `json:"id"`
     Winner          string          `json:"winner"`
     Room            string          `json:"room"`
     Owner           string          `json:"owner"`
+    Started         bool            `json:"started"`
+    Ended           bool            `json:"ended"`
+    Boss            string          `json:"boss"`
 }
 
 type UnityVector3 struct {
@@ -50,6 +53,8 @@ type Player struct {
     NickName        string          `json:"nickName"`
     Destination     UnityVector3    `json:"destination"`
     LastPosition    UnityVector3    `json:"lastposition"`
+    Role            string          `json:"role"`
+    HealPoints      int             `json:"healPoints"`
 }
 
 type RoomJoin struct {
@@ -61,6 +66,11 @@ type RegisterUser struct {
     Id              string           `json:"id"` 
 }
 
+
+type ErrorResponse struct {
+    Code            int              `json:"code"` 
+    Description     string           `json:"description"` 
+}
 
 var players[] *Player
 var games[]   *Game
@@ -77,7 +87,7 @@ func main() {
     server.OnConnect("/", func(s socketio.Conn) error {
         fmt.Println("Player Enter")
         uid := uuid.Must(uuid.NewV4())
-        players = append(players, &Player{Id: uid.String(), SID: s.ID()})
+        players = append(players, &Player{Id: uid.String(), SID: s.ID(), Role: "player", HealPoints: 100})
         
         dat := &RegisterUser{Id: uid.String()}
 
@@ -92,13 +102,12 @@ func main() {
         dat := make(map[string]interface{})
         fmt.Printf("Player Join or Create Game %s", msg.Room)
 
-        var owner = ""
+        var currentPlayerIndex = -1
         for i := range players {
             if players[i].SID == s.ID() {
                 players[i].Room = msg.Room
                 players[i].NickName = msg.NickName
-                owner = players[i].Id
-                server.BroadcastToRoom("", msg.Room, "spawn", players[i])
+                currentPlayerIndex = i
             }
         }
 
@@ -113,26 +122,32 @@ func main() {
 
         if (game.Id == "") {
             uid := uuid.Must(uuid.NewV4())
-            game = &Game{Id: uid.String(), Owner: owner, Room: msg.Room}
+            game = &Game{Id: uid.String(), Owner: players[currentPlayerIndex].Id, Room: msg.Room}
         }
-
-
-        s.Emit("joined", game)
 
         games = append(games, game)
 
+        if (game.Started == false) {
 
-        room := msg.Room
-        s.Join(room)
+            server.BroadcastToRoom("", msg.Room, "spawn", players[currentPlayerIndex])
+            
+            s.Emit("joined", game)
+            
+            room := msg.Room
 
-        
-        server.BroadcastToRoom("", room, "requestPosition")
-        
-        for i := range players {
-            if (players[i].Id != dat["id"] && players[i].Room == room) {
-                s.Emit("spawn", players[i])
+            s.Join(room)
+
+            server.BroadcastToRoom("", room, "requestPosition")
+
+            for i := range players {
+                if (players[i].Id != dat["id"] && players[i].Room == room) {
+                    s.Emit("spawn", players[i])
+                }
             }
-        }        
+        } else {
+            s.Emit("gameError", &ErrorResponse{Code: 05, Description: "The game you are trying to enter is already in progress or finished"})
+        }
+        
     })    
 
     server.OnEvent("/", "move", func(s socketio.Conn, msg UnityMovement) {
@@ -153,12 +168,23 @@ func main() {
         fmt.Println("Game Start")
         for i := range games {
             if games[i].Id == msg.Id {
+                games[i].Started = true
+                pInRoom := getPlayersInRoom(games[i].Room)
+                
+                n := rand.Int() % len(pInRoom)
+                games[i].Boss = pInRoom[n].Id
                 server.BroadcastToRoom("", games[i].Room, "gameStart", games[i])
             }
         }
     })
 
     server.OnEvent("/", "gameFinish", func(s socketio.Conn, msg Game) {
+         fmt.Println("Game End")
+        for i := range games {
+            if games[i].Id == msg.Id {
+                games[i].Ended = true
+            }
+        }       
         server.BroadcastToRoom("", msg.Room, "gameFinish", msg)
     })
 
@@ -167,6 +193,7 @@ func main() {
         room := ""
         for i := range players {
             if players[i].SID == s.ID() {
+                players[i].LastPosition = msg
                 msg.Id = players[i].Id
                 room = players[i].Room
             }
@@ -212,3 +239,13 @@ func removePlayerByIndex(s []*Player, index int) []*Player {
     return append(s[:index], s[index+1:]...)
 }
 
+
+func getPlayersInRoom(roomName string) []*Player {
+    var pInRoom[] *Player
+    for i := range players {
+        if players[i].Room == roomName {
+            pInRoom = append(pInRoom, players[i])
+        }
+    }    
+    return pInRoom
+}

@@ -25,8 +25,15 @@ public class Network : MonoBehaviour
         socket.On("leaved", OnLeave);
         socket.On("updatePosition", OnUpdatePosition);
         socket.On("disconnected", OnDisconnected);
+        socket.On("gameError", OnGameError);
     }
     
+
+
+    private void OnGameError(SocketIOEvent obj)
+    {
+        gameController.GetComponent<GameController>().ShowError(obj.data["description"].str);
+    }
 
 
     private void OnConnected(SocketIOEvent obj)
@@ -38,6 +45,7 @@ public class Network : MonoBehaviour
     {
         gameController.GetComponent<GameController>().GameId = obj.data ["id"].str;
         gameController.GetComponent<GameController>().GameOwner = obj.data ["owner"].str;
+        gameController.GetComponent<GameController>().LoginUi.SetActive(false);
     }    
 
     private void OnLeave(SocketIOEvent obj)
@@ -47,6 +55,8 @@ public class Network : MonoBehaviour
 
     private void OnGameStart(SocketIOEvent obj)
     {
+        var player = spawner.GetPlayer(obj.data["boss"].str);
+        player.GetComponent<NetworkEntity> ().role = "boss";
         gameController.GetComponent<GameController>().StartGameFromServer();
     }
 
@@ -65,7 +75,7 @@ public class Network : MonoBehaviour
     {
         if (currentPlayer.GetComponent<NetworkEntity> ().id != obj.data["id"].str) 
         {
-            var player = spawner.SpawnPlayer(obj.data["id"].str);
+            var player = spawner.SpawnPlayer(obj.data["id"].str, obj.data["nickName"].str, obj.data["healPoints"].n);
             player.GetComponent<NetPlayer>().NickName = obj.data["nickName"].str;
         }
     }

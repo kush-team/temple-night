@@ -1,4 +1,5 @@
 game-client/win-bin
+game-client/source/Temp
 game-client/linux-bin
 game-server/main.exe
 game-server/assets/Build
