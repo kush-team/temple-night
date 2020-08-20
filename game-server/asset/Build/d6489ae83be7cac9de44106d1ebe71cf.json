@@ -1,0 +1,17 @@
+{
+"companyName": "DefaultCompany",
+"productName": "temple-night",
+"productVersion": "0.1",
+"dataUrl": "1d63984316468db612d4260e00e254ae.unityweb",
+"wasmCodeUrl": "eea8a9140ceca461bea11e832d44d37c.unityweb",
+"wasmFrameworkUrl": "a9f7d787e321de464793fb2cffb96a74.unityweb",
+"wasmSymbolsUrl": "2b7e01e3964d528267b9d84ea979cce7.unityweb",
+"graphicsAPI": ["WebGL 2.0","WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20",
+"cacheControl": {"default": "must-revalidate"},
+"developmentBuild": false,
+"multithreading": false,
+"unityVersion": "2019.4.7f1"
+}

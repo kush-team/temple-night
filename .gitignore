@@ -1,0 +1,9 @@
+game-client/win-bin
+game-client/lunux-bin
+game-server/main.exe
+game-server/assets/build
+game-client/source/Library
+
+
+
+.tmp
