@@ -49,6 +49,10 @@ type Player struct {
     HealPoints      float32         `json:"healPoints"`
 }
 
+type PickEvent struct {
+    Id              string          `json:"id"`
+    PickedBy        string          `json:"pickedBy"`
+}
 
 type Pickeable struct {
     Id              string          `json:"id"`
@@ -205,6 +209,21 @@ func main() {
     })
 
 
+
+    server.OnEvent("/", "pick", func(s socketio.Conn, msg PickEvent) {
+        room := ""
+        
+        for i := range players {
+            if players[i].SID == s.ID() {
+                msg.PickedBy = players[i].Id
+                room = players[i].Room
+            }
+        }
+
+        server.BroadcastToRoom("", room, "picked", msg)
+    })    
+
+
     server.OnEvent("/", "updatePosition", func(s socketio.Conn, msg UnityVector3) {
         room := ""
         for i := range players {
@@ -253,7 +272,7 @@ func main() {
 
 func createPickeables() []* Pickeable  {
     p := []*Pickeable{}
-    
+
     spotList := [] int{}
     for i := 0; i < MaxSpots; i++ {
         spotList = append(spotList, i)

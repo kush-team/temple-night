@@ -79,7 +79,12 @@ public class Spawner : MonoBehaviour {
         Destroy(player);
         players.Remove(id);
     }
-
+    public void RemovePickeable(string id)
+    {
+        var pickeable = pickeables[id];
+        Destroy(pickeable);
+        pickeables.Remove(id);
+    }
 
     public string GetPlayerNames()
     {

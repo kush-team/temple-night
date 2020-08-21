@@ -26,6 +26,7 @@ public class Network : MonoBehaviour
         socket.On("updatePosition", OnUpdatePosition);
         socket.On("disconnected", OnDisconnected);
         socket.On("gameError", OnGameError);
+        socket.On("picked", OnPicked);
     }
     
 
@@ -122,6 +123,23 @@ public class Network : MonoBehaviour
         spawner.Remove(disconnectedId);
     }
     
+
+    private void OnPicked(SocketIOEvent obj)
+    {
+        var pickedBy = obj.data["pickedBy"].str;
+        var pickeableId = obj.data["id"].str;
+        spanner.RemovePickeable(pickeableId);
+
+        if (currentPlayer.GetComponent<NetworkEntity> ().id == pickedBy) 
+        {
+            //TO-DO Player pickup item
+        }
+
+
+
+
+    }
+
     private static Quaternion GetQuaternionFromJson(JSONObject obj)
     {
         return new Quaternion(obj["w"].n, obj["x"].n, obj["y"].n, obj["z"].n);
@@ -158,6 +176,15 @@ public class Network : MonoBehaviour
         jsonObject.AddField("targetId", id);
         return jsonObject;
     }
+
+
+    public static void pick(string pickeableId) 
+    {
+        JSONObject jsonObject = new JSONObject(JSONObject.Type.OBJECT);
+        jsonObject.AddField("id", pickeableId);
+        if (socket.IsConnected) socket.Emit("pick", jsonObject);
+    }
+
 
     public static void Move(Vector3 rotation, Vector3 destination, bool walking, bool running, bool jumping)
     {
