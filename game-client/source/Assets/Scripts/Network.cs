@@ -46,6 +46,11 @@ public class Network : MonoBehaviour
         gameController.GetComponent<GameController>().GameId = obj.data ["id"].str;
         gameController.GetComponent<GameController>().GameOwner = obj.data ["owner"].str;
         gameController.GetComponent<GameController>().LoginUi.SetActive(false);
+
+        foreach (JSONObject pickable in obj.data["pickeables"].list)
+        {
+            spawner.SpawnPickeable(pickable["id"].str, pickable["type"].str, pickable["spot"].n, pickable["picked"].b);
+        }
     }    
 
     private void OnLeave(SocketIOEvent obj)

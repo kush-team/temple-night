@@ -59,6 +59,7 @@ public class GameController : MonoBehaviour
         if (GameOwner == Player.GetComponent<NetworkEntity> ().id && !isGameStarted && GameOwner != "") 
         {
             StartButton.interactable = true;
+            StartButton.GetComponentInChildren<Text>().text = "Start Game";
         }
         if (spawner.GetBossId() != "")
         {

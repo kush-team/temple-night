@@ -9,15 +9,7 @@ import (
     "github.com/satori/go.uuid"
 )
 
-type Game struct {
-    Id              string          `json:"id"`
-    Winner          string          `json:"winner"`
-    Room            string          `json:"room"`
-    Owner           string          `json:"owner"`
-    Started         bool            `json:"started"`
-    Ended           bool            `json:"ended"`
-    Boss            string          `json:"boss"`
-}
+
 
 type UnityVector3 struct {
     Id              string          `json:"id"`
@@ -54,7 +46,26 @@ type Player struct {
     Destination     UnityVector3    `json:"destination"`
     LastPosition    UnityVector3    `json:"lastposition"`
     Role            string          `json:"role"`
-    HealPoints      int             `json:"healPoints"`
+    HealPoints      float32         `json:"healPoints"`
+}
+
+
+type Pickeable struct {
+    Id              string          `json:"id"`
+    Type            string          `json:"type"`
+    Picked          bool            `json:"picked"`
+    Spot            int             `json:"spot"`
+}
+
+type Game struct {
+    Id              string          `json:"id"`
+    Winner          string          `json:"winner"`
+    Room            string          `json:"room"`
+    Owner           string          `json:"owner"`
+    Started         bool            `json:"started"`
+    Ended           bool            `json:"ended"`
+    Boss            string          `json:"boss"`
+    Pickeables[]    *Pickeable      `json:"pickeables"`
 }
 
 type RoomJoin struct {
@@ -75,6 +86,10 @@ type ErrorResponse struct {
 var players[] *Player
 var games[]   *Game
 
+var PickeablesTypes = [3]string {"weed", "grinder", "roll-paper"}
+
+const MaxSpots int = 30
+const MaxPickeables int = 10
 
 
 
@@ -122,7 +137,8 @@ func main() {
 
         if (game.Id == "") {
             uid := uuid.Must(uuid.NewV4())
-            game = &Game{Id: uid.String(), Owner: players[currentPlayerIndex].Id, Room: msg.Room}
+            game = &Game{Id: uid.String(), Owner: players[currentPlayerIndex].Id, Room: msg.Room, Pickeables: createPickeables()}
+            
         }
 
         games = append(games, game)
@@ -179,7 +195,7 @@ func main() {
     })
 
     server.OnEvent("/", "gameFinish", func(s socketio.Conn, msg Game) {
-         fmt.Println("Game End")
+        fmt.Println("Game End")
         for i := range games {
             if games[i].Id == msg.Id {
                 games[i].Ended = true
@@ -235,6 +251,25 @@ func main() {
 }
 
 
+func createPickeables() []* Pickeable  {
+    p := []*Pickeable{}
+    
+    spotList := [] int{}
+    for i := 0; i < MaxSpots; i++ {
+        spotList = append(spotList, i)
+    }
+
+    for i := 0; i < MaxPickeables; i++ {
+        uid := uuid.Must(uuid.NewV4())
+        typeIndex := rand.Int() % len(PickeablesTypes)
+        spot := rand.Int() % len(spotList)
+        p = append(p, &Pickeable{Type: PickeablesTypes[typeIndex], Id: uid.String(), Picked: false, Spot: spotList[spot]})
+        spotList = append(spotList[:spot], spotList[spot+1:]...)
+    }
+    return p
+}
+
+
 func removePlayerByIndex(s []*Player, index int) []*Player {
     return append(s[:index], s[index+1:]...)
 }
@@ -249,3 +284,4 @@ func getPlayersInRoom(roomName string) []*Player {
     }    
     return pInRoom
 }
+

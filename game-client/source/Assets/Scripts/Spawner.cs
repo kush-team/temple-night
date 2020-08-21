@@ -10,7 +10,12 @@ public class Spawner : MonoBehaviour {
     public GameObject currentPlayer;
     public SocketIOComponent socket;
 
+    public GameObject Pickeable;
+
+
     private Dictionary<string, GameObject> players = new Dictionary<string, GameObject>();
+
+    private Dictionary<string, GameObject> pickeables = new Dictionary<string, GameObject>();
 
     public GameObject SpawnPlayer(string id, string nickname, float healPoints)
     {
@@ -24,6 +29,25 @@ public class Spawner : MonoBehaviour {
         AddPlayer(id, player);
 
         return player;
+    }
+
+
+    public void SpawnPickeable(string id, string type, float spot, bool picked)
+    {
+        int spotIndex = (int)spot;
+        Vector3 loadPosition =  GameObject.Find("spot" + spotIndex).transform.position;
+        var pickeable = GameObject.Instantiate(Pickeable, loadPosition, Quaternion.identity) as GameObject;
+        AddPickeable(id, pickeable);
+    }   
+
+    public void AddPickeable(string id, GameObject pickeable)
+    {
+        pickeables.Add(id, pickeable);
+    }
+
+    public GameObject GetPickeable(string id)
+    {
+        return pickeables[id];
     }
 
     public string GetBossId() 
