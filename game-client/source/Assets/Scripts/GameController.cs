@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-	public GameObject netWorkPlayer;
     public InputField Room;
     public InputField NickName;
     public Text ErrorLabel;
@@ -21,7 +20,6 @@ public class GameController : MonoBehaviour
     public GameObject LobbyUi;
     public GameObject FinishUi;
     public GameObject ErrorUi;
-    public GameObject Player;
 
     public string GameId;
     public string GameOwner;
@@ -33,9 +31,6 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        netWorkPlayer =  GameObject.Find("NetWorkPlayer");
-        netWorkPlayer.SetActive(false);
-        Player.GetComponent<PlayerController>().enabled = false;
         FinishUi.SetActive(false);
         LobbyUi.SetActive(false);
         ErrorUi.SetActive(false);
@@ -47,7 +42,6 @@ public class GameController : MonoBehaviour
 
     void JoinGame() 
     {
-        Player.GetComponent<NetworkEntity> ().name = NickName.text;
         Network.Join(Room.text, NickName.text);   
         LobbyUi.SetActive(true);
     }
@@ -56,18 +50,10 @@ public class GameController : MonoBehaviour
     {   
         PlayerList.text = spawner.GetPlayerNames();
 
-        if (GameOwner == Player.GetComponent<NetworkEntity> ().id && !isGameStarted && GameOwner != "") 
+        if (GameOwner == spawner.GetLocalPlayerId() && !isGameStarted && GameOwner != "") 
         {
             StartButton.interactable = true;
             StartButton.GetComponentInChildren<Text>().text = "Start Game";
-        }
-        if (spawner.GetBossId() != "")
-        {
-            if (spawner.GetBossId() == Player.GetComponent<NetworkEntity> ().id) 
-            {
-                var scaleChange = new Vector3(1.2f, 1.2f, 1.2f);
-                Player.transform.localScale = scaleChange;
-            }
         }
     }
 
@@ -75,15 +61,14 @@ public class GameController : MonoBehaviour
     {
         isGameStarted = true;
         LobbyUi.SetActive(false);
-        Player.GetComponent<PlayerController>().enabled = true;
         Network.StartGame(GameId);   
     }
 
-    public void StartGameFromServer() 
+    public void StartGameFromServer(string bossId) 
     {
+        spawner.SpawnPlayers(bossId);
         isGameStarted = true;
         LobbyUi.SetActive(false);
-        Player.GetComponent<PlayerController>().enabled = true;
     }
 
 
@@ -95,6 +80,7 @@ public class GameController : MonoBehaviour
     public void ShowError(string description) 
     {
         LoginUi.SetActive(false);
+        LobbyUi.SetActive(false);
         ErrorUi.SetActive(true);
         ErrorLabel.text = description;
     }    

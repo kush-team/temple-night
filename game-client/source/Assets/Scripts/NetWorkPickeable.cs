@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class NetWorkPickeable : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	public string id;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
+	public void OnCollisionEnter(Collision collision)
+	{
+		NetworkEntity player = collision.gameObject.GetComponent<NetworkEntity>();
+
+		if (player)
+		{
+			Network.Pick(id, player.id);
+		}
+	}
 }

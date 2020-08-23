@@ -157,7 +157,7 @@ func main() {
 
             s.Join(room)
 
-            server.BroadcastToRoom("", room, "requestPosition")
+            //server.BroadcastToRoom("", room, "requestPosition")
 
             for i := range players {
                 if (players[i].Id != dat["id"] && players[i].Room == room) {

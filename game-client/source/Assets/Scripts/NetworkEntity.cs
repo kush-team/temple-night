@@ -4,7 +4,7 @@ using System.Collections;
 public class NetworkEntity : MonoBehaviour
 {
     public string id;
-    public string name;
+    public string nickName;
     public float healPoints;
     public string role;
 

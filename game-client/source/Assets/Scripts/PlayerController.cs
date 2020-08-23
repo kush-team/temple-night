@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class PlayerController : MonoBehaviour
 {
   Vector3 _CharacterDirection, realativedir;
@@ -9,14 +10,15 @@ public class PlayerController : MonoBehaviour
      Animator _CharacterAnim;
      Rigidbody _CharacterRigidbody;
      [SerializeField]
-     float TurnSpeed = 2, speed = 1;
+     float TurnSpeed = 2, speed = 2;
      bool _IsWalking;
      bool _isRunning;
      bool _isJumping;
      float jumpHeight = 2.5f;     
      float groundDistance = 0.1f;
      [SerializeField]
-     Camera VCam;
+     public Camera VCam;
+
  
  
      void Start()
@@ -79,12 +81,12 @@ public class PlayerController : MonoBehaviour
      {
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            speed = 2;
+            speed = 4;
             _isRunning = true;
         }
         else
         {
-            speed = 1;
+            speed = 2;
             _isRunning = false;
         }        
 

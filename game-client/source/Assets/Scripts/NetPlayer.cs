@@ -10,7 +10,7 @@ public class NetPlayer : MonoBehaviour
     public bool walking;
     public bool running;
     public bool jumping;
-    public TextMeshPro Label;
+    //public TextMeshPro Label;
     
     public string NickName;
 
@@ -62,7 +62,7 @@ public class NetPlayer : MonoBehaviour
                     animator.SetBool("Idle", !walking);
                 }
             }
-            Label.text = NickName;
+            //Label.text = NickName;
         }        
     }
 }

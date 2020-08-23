@@ -7,7 +7,7 @@ public class Network : MonoBehaviour
 {
 
     static SocketIOComponent socket;
-    public GameObject currentPlayer;
+
     public GameObject gameController;
     public Spawner spawner;
 
@@ -27,9 +27,19 @@ public class Network : MonoBehaviour
         socket.On("disconnected", OnDisconnected);
         socket.On("gameError", OnGameError);
         socket.On("picked", OnPicked);
+        socket.On("error", OnError);
+        socket.On("close", OnClose);
     }
     
-
+    private void OnError(SocketIOEvent obj)
+    {
+        Debug.Log("Error Socket");
+    }
+    
+    private void OnClose(SocketIOEvent obj)
+    {
+        Debug.Log("Close Socket");
+    }
 
     private void OnGameError(SocketIOEvent obj)
     {
@@ -61,9 +71,7 @@ public class Network : MonoBehaviour
 
     private void OnGameStart(SocketIOEvent obj)
     {
-        var player = spawner.GetPlayer(obj.data["boss"].str);
-        player.GetComponent<NetworkEntity> ().role = "boss";
-        gameController.GetComponent<GameController>().StartGameFromServer();
+        gameController.GetComponent<GameController>().StartGameFromServer(obj.data["boss"].str);
     }
 
     private void OnGameFinish(SocketIOEvent obj)
@@ -73,23 +81,21 @@ public class Network : MonoBehaviour
 
     private void OnRegister(SocketIOEvent obj)
     {
-        spawner.AddPlayer(obj.data["id"].str, currentPlayer);
-		currentPlayer.GetComponent<NetworkEntity> ().id = obj.data ["id"].str;
+        spawner.CreateLocalPlayer(obj.data["id"].str);
     }
     
     private void OnSpawn(SocketIOEvent obj)
     {
-        if (currentPlayer.GetComponent<NetworkEntity> ().id != obj.data["id"].str) 
+        if (spawner.GetLocalPlayerId() != obj.data["id"].str) 
         {
-            var player = spawner.SpawnPlayer(obj.data["id"].str, obj.data["nickName"].str, obj.data["healPoints"].n);
-            player.GetComponent<NetPlayer>().NickName = obj.data["nickName"].str;
+            spawner.AddNetPlayer(obj.data["id"].str, obj.data["nickName"].str, obj.data["healPoints"].n);
         }
     }
 
     private void OnMove(SocketIOEvent obj)
     {
 
-        if (currentPlayer.GetComponent<NetworkEntity> ().id != obj.data["id"].str) 
+        if (spawner.GetLocalPlayerId() != obj.data["id"].str) 
         {
             var position = GetVectorFromJson(obj.data["d"]);
             var rotation = GetVectorFromJson(obj.data["r"]);
@@ -113,7 +119,7 @@ public class Network : MonoBehaviour
 
     private void OnRequestPosition(SocketIOEvent obj)
     {
-        if (socket.IsConnected) socket.Emit("updatePosition", VectorToJson(currentPlayer.transform.position));
+        //if (socket.IsConnected) socket.Emit("updatePosition", VectorToJson(spawner.GetLocalPlayer().transform.position));
     }
 
 
@@ -128,16 +134,11 @@ public class Network : MonoBehaviour
     {
         var pickedBy = obj.data["pickedBy"].str;
         var pickeableId = obj.data["id"].str;
-        spanner.RemovePickeable(pickeableId);
-
-        if (currentPlayer.GetComponent<NetworkEntity> ().id == pickedBy) 
+        spawner.RemovePickeable(pickeableId);
+        if (spawner.GetLocalPlayerId() == pickedBy)
         {
             //TO-DO Player pickup item
         }
-
-
-
-
     }
 
     private static Quaternion GetQuaternionFromJson(JSONObject obj)
@@ -178,10 +179,11 @@ public class Network : MonoBehaviour
     }
 
 
-    public static void pick(string pickeableId) 
+    public static void Pick(string pickeableId, string pickedBy) 
     {
         JSONObject jsonObject = new JSONObject(JSONObject.Type.OBJECT);
         jsonObject.AddField("id", pickeableId);
+        jsonObject.AddField("pickedBy", pickedBy);
         if (socket.IsConnected) socket.Emit("pick", jsonObject);
     }
 

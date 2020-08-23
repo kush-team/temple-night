@@ -2,33 +2,101 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using SocketIO;
+using Cinemachine;
 
 public class Spawner : MonoBehaviour {
 
-    public GameObject networkPlayer;
-    public GameObject currentPlayer;
-    public SocketIOComponent socket;
-
-    public GameObject Pickeable;
-
+    public GameObject Boss;
+    public GameObject Player;
+    public GameObject PickeableWeed;
+    public GameObject PickeableGrinder;
+    public GameObject PickeablePaper;
+    public Camera VCam;
 
     private Dictionary<string, GameObject> players = new Dictionary<string, GameObject>();
 
     private Dictionary<string, GameObject> pickeables = new Dictionary<string, GameObject>();
 
-    public GameObject SpawnPlayer(string id, string nickname, float healPoints)
+    private string playerId;
+
+    private GameObject playerObject;
+
+    private Dictionary<string, string> netPlayers = new Dictionary<string, string>();
+
+
+
+    public GameObject GetLocalPlayer()
     {
-        var player = Instantiate(networkPlayer, Vector3.zero, Quaternion.identity) as GameObject;
+        return playerObject;
+    }
 
-        player.GetComponent<NetworkEntity>().id = id;
-        player.GetComponent<NetworkEntity>().name = nickname;
-        player.GetComponent<NetworkEntity>().healPoints = healPoints;
-        player.SetActive(true);
+    public string GetLocalPlayerId()
+    {
+        return playerId;
+    }
 
-        AddPlayer(id, player);
+    public void CreateLocalPlayer(string id)
+    {
+        playerId = id;
+    }
 
-        return player;
+
+
+
+    public void AddNetPlayer(string id, string nickname, float healPoints)
+    {
+        netPlayers.Add(id, nickname);
+    }
+
+
+    public void SpawnPlayers(string bossId)
+    {
+        var prefab = Player;
+        var spawnSlot = "spot_player1";
+
+        if (bossId == playerId)
+        {
+            prefab = Boss;
+            spawnSlot = "spot_boss";
+        }
+
+        if (GameObject.Find("Me") == null) 
+        {
+            playerObject = Instantiate(prefab, GameObject.Find(spawnSlot).transform.position, Quaternion.identity) as GameObject;
+            playerObject.AddComponent<PlayerController>();
+            playerObject.name = "Me";
+            playerObject.GetComponent<NetworkEntity>().id = playerId;
+            playerObject.GetComponent<PlayerController>().VCam = VCam;
+            
+            AddPlayer(playerId, playerObject);
+
+
+            var c = GameObject.FindWithTag("VirtualCamera");
+            c.GetComponent<CinemachineFreeLook>().m_Follow = playerObject.transform;
+            c.GetComponent<CinemachineFreeLook>().m_LookAt = playerObject.transform;
+            var pIndex = 2;
+
+            foreach(KeyValuePair<string, string> entry in netPlayers)
+            {
+                if (bossId == entry.Key)
+                {
+                    prefab = Boss;
+                    spawnSlot = "spot_boss";
+                } 
+                else
+                {
+                    prefab = Player;
+                    spawnSlot = "spot_player" + pIndex;  
+                    pIndex++;
+                }
+                var netPlayer = Instantiate(prefab, GameObject.Find(spawnSlot).transform.position, Quaternion.identity) as GameObject;
+                netPlayer.AddComponent<NetPlayer>();
+                netPlayer.GetComponent<NetworkEntity>().id = entry.Key;
+                netPlayer.GetComponent<NetworkEntity>().nickName = entry.Value;
+                AddPlayer(entry.Key, netPlayer);
+            }          
+        }
+
     }
 
 
@@ -36,7 +104,24 @@ public class Spawner : MonoBehaviour {
     {
         int spotIndex = (int)spot;
         Vector3 loadPosition =  GameObject.Find("spot" + spotIndex).transform.position;
-        var pickeable = GameObject.Instantiate(Pickeable, loadPosition, Quaternion.identity) as GameObject;
+
+        var pickeableType = PickeableWeed;
+
+        switch (type) {
+            case "grinder":
+                pickeableType = PickeableGrinder;
+                break;
+            case "roll-paper":
+                pickeableType = PickeablePaper;
+                break;
+
+            default:
+                pickeableType = PickeableWeed;
+                break;
+        }
+
+        var pickeable = GameObject.Instantiate(pickeableType, loadPosition, Quaternion.identity) as GameObject;
+        pickeable.GetComponent<NetWorkPickeable>().id = id;
         AddPickeable(id, pickeable);
     }   
 
@@ -79,6 +164,7 @@ public class Spawner : MonoBehaviour {
         Destroy(player);
         players.Remove(id);
     }
+
     public void RemovePickeable(string id)
     {
         var pickeable = pickeables[id];
@@ -89,9 +175,9 @@ public class Spawner : MonoBehaviour {
     public string GetPlayerNames()
     {
         var str = "Player List:";
-        foreach(KeyValuePair<string, GameObject> entry in players)
+        foreach(KeyValuePair<string, string> entry in netPlayers)
         {
-             str += "\n" + entry.Value.GetComponent<NetworkEntity>().name;
+             str += "\n" + entry.Value;
         }       
         return str;
     }
