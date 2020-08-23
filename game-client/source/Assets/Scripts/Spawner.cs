@@ -20,9 +20,20 @@ public class Spawner : MonoBehaviour {
     private string playerId;
 
     private GameObject playerObject;
+    private string playerName;
 
     private Dictionary<string, string> netPlayers = new Dictionary<string, string>();
 
+
+    public string GetLocalPlayerName()
+    {
+        return playerName;
+    }
+
+    public void SetLocalPlayerName(string name)
+    {
+        playerName = name;
+    }
 
 
     public GameObject GetLocalPlayer()
@@ -174,7 +185,7 @@ public class Spawner : MonoBehaviour {
 
     public string GetPlayerNames()
     {
-        var str = "Player List:";
+        var str = "Player List:\n" + playerName;
         foreach(KeyValuePair<string, string> entry in netPlayers)
         {
              str += "\n" + entry.Value;

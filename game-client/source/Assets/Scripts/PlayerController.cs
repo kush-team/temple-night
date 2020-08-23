@@ -79,6 +79,12 @@ public class PlayerController : MonoBehaviour
  
      void CharacterActions()
      {
+
+        if (Input.GetKeyUp (KeyCode.E)) 
+        {
+
+        }   
+
         if (Input.GetKey(KeyCode.LeftShift))
         {
             speed = 4;
@@ -93,7 +99,7 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Jump") && this.IsGrounded())
         {
             _isJumping = true;
-            _CharacterRigidbody.AddForce(Vector3.up * Mathf.Sqrt(jumpHeight * -1.8f * Physics.gravity.y), ForceMode.VelocityChange);
+            _CharacterRigidbody.AddForce(Vector3.up * Mathf.Sqrt(jumpHeight * -0.8f * Physics.gravity.y), ForceMode.VelocityChange);
         }
         else
         {

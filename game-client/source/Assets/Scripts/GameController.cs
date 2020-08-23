@@ -43,6 +43,7 @@ public class GameController : MonoBehaviour
     void JoinGame() 
     {
         Network.Join(Room.text, NickName.text);   
+        spawner.SetLocalPlayerName(NickName.text);
         LobbyUi.SetActive(true);
     }
 

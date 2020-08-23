@@ -47,6 +47,7 @@ type Player struct {
     LastPosition    UnityVector3    `json:"lastposition"`
     Role            string          `json:"role"`
     HealPoints      float32         `json:"healPoints"`
+    Pickeables[]    *Pickeable      `json:"pickeables"`
 }
 
 type PickEvent struct {
@@ -106,7 +107,7 @@ func main() {
     server.OnConnect("/", func(s socketio.Conn) error {
         fmt.Println("Player Enter")
         uid := uuid.Must(uuid.NewV4())
-        players = append(players, &Player{Id: uid.String(), SID: s.ID(), Role: "player", HealPoints: 100})
+        players = append(players, &Player{Id: uid.String(), SID: s.ID(), Role: "player", HealPoints: 100, Pickeables: []*Pickeable{}})
         
         dat := &RegisterUser{Id: uid.String()}
 
@@ -212,11 +213,15 @@ func main() {
 
     server.OnEvent("/", "pick", func(s socketio.Conn, msg PickEvent) {
         room := ""
-        
         for i := range players {
             if players[i].SID == s.ID() {
                 msg.PickedBy = players[i].Id
                 room = players[i].Room
+                for i := range games {
+                    if games[i].Room == room {
+                        players[i].Pickeables = append(players[i].Pickeables, getPickeableById(games[i].Pickeables, msg.Id))
+                    }
+                }          
             }
         }
 
@@ -287,7 +292,17 @@ func createPickeables() []* Pickeable  {
     }
     return p
 }
+func getPickeableById(pickeables []* Pickeable, id string) *Pickeable {
+    p := &Pickeable{}
 
+    for i := range pickeables {
+        if pickeables[i].Id == id {
+            p = pickeables[i]   
+        }
+    }  
+
+    return p
+}
 
 func removePlayerByIndex(s []*Player, index int) []*Player {
     return append(s[:index], s[index+1:]...)

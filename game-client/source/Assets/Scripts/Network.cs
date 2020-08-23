@@ -201,6 +201,7 @@ public class Network : MonoBehaviour
 
     public static void Join(string roomName, string nickName) 
     {
+        
         JSONObject jsonObject = new JSONObject(JSONObject.Type.OBJECT);
         jsonObject.AddField("room", roomName);
         jsonObject.AddField("nickName", nickName);
