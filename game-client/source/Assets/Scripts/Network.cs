@@ -145,12 +145,12 @@ public class Network : MonoBehaviour
 
     private static Quaternion GetQuaternionFromJson(JSONObject obj)
     {
-        return new Quaternion(obj["w"].n, obj["x"].n, obj["y"].n, obj["z"].n);
+        return new Quaternion(float.Parse(obj["w"].str), float.Parse(obj["x"].str), float.Parse(obj["y"].str), float.Parse(obj["z"].str));
     }
 
     private static Vector3 GetVectorFromJson(JSONObject obj)
     {
-        return new Vector3(obj["x"].n, obj["y"].n, obj["z"].n);
+        return new Vector3(float.Parse(obj["x"].str), float.Parse(obj["y"].str), float.Parse(obj["z"].str));
     }
 
 

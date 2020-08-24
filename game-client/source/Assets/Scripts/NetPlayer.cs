@@ -36,8 +36,9 @@ public class NetPlayer : MonoBehaviour
         {
             Quaternion r = Quaternion.Euler(rotation);
 
+            
             transform.rotation = r;
-            transform.position = destination;
+            _body.MovePosition(destination);
 
             if (jumping)
             {

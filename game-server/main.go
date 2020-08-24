@@ -172,7 +172,6 @@ func main() {
     })    
 
     server.OnEvent("/", "move", func(s socketio.Conn, msg UnityMovement) {
-        fmt.Println(msg);
         room := ""
         for i := range players {
             if players[i].SID == s.ID() {
@@ -217,11 +216,13 @@ func main() {
             if players[i].SID == s.ID() {
                 msg.PickedBy = players[i].Id
                 room = players[i].Room
+/*                
                 for i := range games {
                     if games[i].Room == room {
                         players[i].Pickeables = append(players[i].Pickeables, getPickeableById(games[i].Pickeables, msg.Id))
                     }
                 }          
+*/
             }
         }
 
