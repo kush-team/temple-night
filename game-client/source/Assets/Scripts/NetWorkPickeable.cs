@@ -16,4 +16,9 @@ public class NetWorkPickeable : MonoBehaviour
 			Network.Pick(id, player.id);
 		}
 	}
+
+	public void FixedUpdate()
+	{
+		transform.Rotate(0, Time.deltaTime * 40f, 0, Space.Self);
+	}
 }
