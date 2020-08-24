@@ -13,18 +13,18 @@ import (
 
 type UnityVector3 struct {
     Id              string          `json:"id"`
-    X               float64         `json:"x"`
-    Y               float64         `json:"y"`
-    Z               float64         `json:"z"`
+    X               string         `json:"x"`
+    Y               string         `json:"y"`
+    Z               string         `json:"z"`
 }
 
 
 type UnityQuaternion struct {
     Id              string          `json:"id"`
-    W               float64         `json:"w"`
-    X               float64         `json:"x"`
-    Y               float64         `json:"y"`
-    Z               float64         `json:"z"`
+    W               string         `json:"w"`
+    X               string         `json:"x"`
+    Y               string         `json:"y"`
+    Z               string         `json:"z"`
 }
 
 

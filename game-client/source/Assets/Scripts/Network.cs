@@ -157,19 +157,19 @@ public class Network : MonoBehaviour
     public static JSONObject VectorToJson(Vector3 vector)
     {
         JSONObject jsonObject = new JSONObject(JSONObject.Type.OBJECT);
-        jsonObject.AddField("x", vector.x);
-        jsonObject.AddField("y", vector.y);
-        jsonObject.AddField("z", vector.z);
+        jsonObject.AddField("x", string.Format("0.0000", vector.x));
+        jsonObject.AddField("y", string.Format("0.0000", vector.y));
+        jsonObject.AddField("z", string.Format("0.0000", vector.z));
         return jsonObject;
     }
 
    public static JSONObject QuaternionToJson(Quaternion quaternion)
     {
         JSONObject jsonObject = new JSONObject(JSONObject.Type.OBJECT);
-        jsonObject.AddField("w", quaternion.w);
-        jsonObject.AddField("x", quaternion.x);
-        jsonObject.AddField("y", quaternion.y);
-        jsonObject.AddField("z", quaternion.z);
+        jsonObject.AddField("w", string.Format("0.0000", quaternion.w));
+        jsonObject.AddField("x", string.Format("0.0000", quaternion.x));
+        jsonObject.AddField("y", string.Format("0.0000", quaternion.y));
+        jsonObject.AddField("z", string.Format("0.0000", quaternion.z));
         return jsonObject;
     }    
 
