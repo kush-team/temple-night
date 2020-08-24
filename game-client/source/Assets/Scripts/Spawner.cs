@@ -78,7 +78,12 @@ public class Spawner : MonoBehaviour {
             playerObject.name = "Me";
             playerObject.GetComponent<NetworkEntity>().id = playerId;
             playerObject.GetComponent<PlayerController>().VCam = VCam;
-            
+
+            if (bossId == playerId) 
+            {
+                playerObject.GetComponent<NetworkEntity>().role = "boss";
+            }  
+                      
             AddPlayer(playerId, playerObject);
 
 
@@ -88,7 +93,7 @@ public class Spawner : MonoBehaviour {
             var pIndex = 2;
 
             foreach(KeyValuePair<string, string> entry in netPlayers)
-            {
+            {   
                 if (bossId == entry.Key)
                 {
                     prefab = Boss;
@@ -100,10 +105,15 @@ public class Spawner : MonoBehaviour {
                     spawnSlot = "spot_player" + pIndex;  
                     pIndex++;
                 }
+
                 var netPlayer = Instantiate(prefab, GameObject.Find(spawnSlot).transform.position, Quaternion.identity) as GameObject;
                 netPlayer.AddComponent<NetPlayer>();
                 netPlayer.GetComponent<NetworkEntity>().id = entry.Key;
                 netPlayer.GetComponent<NetworkEntity>().nickName = entry.Value;
+                if (bossId == entry.Key) 
+                {
+                    netPlayer.GetComponent<NetworkEntity>().role = "boss";
+                }
                 AddPlayer(entry.Key, netPlayer);
             }          
         }

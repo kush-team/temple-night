@@ -173,7 +173,7 @@ func main() {
 
     server.OnEvent("/", "move", func(s socketio.Conn, msg UnityMovement) {
         room := ""
-
+        fmt.Println(msg);
         for i := range players {
             if players[i].SID == s.ID() {
                 msg.Id = players[i].Id

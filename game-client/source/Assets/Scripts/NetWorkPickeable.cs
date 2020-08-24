@@ -11,7 +11,7 @@ public class NetWorkPickeable : MonoBehaviour
 	{
 		NetworkEntity player = collision.gameObject.GetComponent<NetworkEntity>();
 
-		if (player)
+		if (player && !player.isBoss())
 		{
 			Network.Pick(id, player.id);
 		}

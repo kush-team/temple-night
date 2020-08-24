@@ -97,9 +97,11 @@ public class Network : MonoBehaviour
 
         if (spawner.GetLocalPlayerId() != obj.data["id"].str) 
         {
+
             var position = GetVectorFromJson(obj.data["d"]);
             var rotation = GetVectorFromJson(obj.data["r"]);
             var player = spawner.GetPlayer(obj.data["id"].str);
+
 
             player.GetComponent<NetPlayer>().walking = obj.data["walking"].b;
             player.GetComponent<NetPlayer>().running = obj.data["running"].b;
