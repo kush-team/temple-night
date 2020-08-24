@@ -157,19 +157,19 @@ public class Network : MonoBehaviour
     public static JSONObject VectorToJson(Vector3 vector)
     {
         JSONObject jsonObject = new JSONObject(JSONObject.Type.OBJECT);
-        jsonObject.AddField("x", string.Format("0.0000", vector.x));
-        jsonObject.AddField("y", string.Format("0.0000", vector.y));
-        jsonObject.AddField("z", string.Format("0.0000", vector.z));
+        jsonObject.AddField("x", vector.x.ToString("F2"));
+        jsonObject.AddField("y", vector.y.ToString("F2"));
+        jsonObject.AddField("z", vector.z.ToString("F2"));
         return jsonObject;
     }
 
    public static JSONObject QuaternionToJson(Quaternion quaternion)
     {
         JSONObject jsonObject = new JSONObject(JSONObject.Type.OBJECT);
-        jsonObject.AddField("w", string.Format("0.0000", quaternion.w));
-        jsonObject.AddField("x", string.Format("0.0000", quaternion.x));
-        jsonObject.AddField("y", string.Format("0.0000", quaternion.y));
-        jsonObject.AddField("z", string.Format("0.0000", quaternion.z));
+        jsonObject.AddField("w", quaternion.w.ToString("F2"));
+        jsonObject.AddField("x", quaternion.x.ToString("F2"));
+        jsonObject.AddField("y", quaternion.y.ToString("F2"));
+        jsonObject.AddField("z", quaternion.z.ToString("F2"));
         return jsonObject;
     }    
 

@@ -20,7 +20,7 @@ type UnityVector3 struct {
 
 
 type UnityQuaternion struct {
-    Id              string          `json:"id"`
+    Id              string         `json:"id"`
     W               string         `json:"w"`
     X               string         `json:"x"`
     Y               string         `json:"y"`
@@ -172,7 +172,6 @@ func main() {
     })    
 
     server.OnEvent("/", "move", func(s socketio.Conn, msg UnityMovement) {
-        fmt.Println(msg)
         room := ""
         for i := range players {
             if players[i].SID == s.ID() {
