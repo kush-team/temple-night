@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
      Quaternion _CharacterRotation, rot;
      Animator _CharacterAnim;
      Rigidbody _CharacterRigidbody;
+     NetworkEntity _netWorkEntity;
      [SerializeField]
      float TurnSpeed = 2, speed = 2;
      bool _IsWalking;
@@ -19,12 +20,15 @@ public class PlayerController : MonoBehaviour
      [SerializeField]
      public Camera VCam;
 
+
+     private GameObject proximatePlayer;
  
  
      void Start()
      {
          _CharacterAnim = GetComponent<Animator>();
          _CharacterRigidbody = GetComponent<Rigidbody>(); 
+         _netWorkEntity = GetComponent<NetworkEntity>(); 
      }
  
      void Update()
@@ -42,7 +46,7 @@ public class PlayerController : MonoBehaviour
   
          float h = Input.GetAxis("Horizontal");
          float v = Input.GetAxis("Vertical");
-         
+
          _CharacterDirection.Set(h, 0, v);
          realativedir = VCam.transform.TransformDirection(_CharacterDirection);
          realativedir.y = 0f;
@@ -75,13 +79,16 @@ public class PlayerController : MonoBehaviour
  
      void CharacterActions()
      {
-
-        if (Input.GetKeyUp (KeyCode.E)) 
+ 
+        if (Input.GetKey(KeyCode.E) ||  Input.GetKey("joystick 1 button 2"))
         {
+            if (proximatePlayer)
+            {
+                //TO-DO  NetWork.HitPlayer(proximatePlayer.GetComponent<NetworkEntity>().id);
+            }
+        }
 
-        }   
-
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) ||  Input.GetKey("joystick 1 button 7"))
         {
             speed = 4;
             _isRunning = true;
@@ -106,7 +113,29 @@ public class PlayerController : MonoBehaviour
         } 
      }    
 
-    private bool IsGrounded() {
+
+
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        if (_netWorkEntity.isBoss())
+        {
+            GameObject player = collision.gameObject;
+            if (player && player.GetComponent<NetworkEntity>())
+            {
+                proximatePlayer = player;
+            }
+            else
+            {
+                proximatePlayer = null;
+            }
+        }
+
+    }
+
+
+    private bool IsGrounded() 
+    {
        return Physics.Raycast(transform.position, -Vector3.up, groundDistance + 0.1f);
     }      
 }
