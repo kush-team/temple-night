@@ -13,18 +13,18 @@ import (
 
 type UnityVector3 struct {
     Id              string          `json:"id"`
-    X               float32         `json:"x"`
-    Y               float32         `json:"y"`
-    Z               float32         `json:"z"`
+    X               float64         `json:"x"`
+    Y               float64         `json:"y"`
+    Z               float64         `json:"z"`
 }
 
 
 type UnityQuaternion struct {
     Id              string          `json:"id"`
-    W               float32         `json:"w"`
-    X               float32         `json:"x"`
-    Y               float32         `json:"y"`
-    Z               float32         `json:"z"`
+    W               float64         `json:"w"`
+    X               float64         `json:"x"`
+    Y               float64         `json:"y"`
+    Z               float64         `json:"z"`
 }
 
 
@@ -173,7 +173,6 @@ func main() {
 
     server.OnEvent("/", "move", func(s socketio.Conn, msg UnityMovement) {
         room := ""
-        fmt.Println(msg);
         for i := range players {
             if players[i].SID == s.ID() {
                 msg.Id = players[i].Id
