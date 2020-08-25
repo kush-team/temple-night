@@ -141,9 +141,7 @@ public class PlayerController : MonoBehaviour
 
     public void Hit()
     {
-        _CharacterAnim.SetBool("Walking", false);
-        _CharacterAnim.SetBool("Runnig", false);
-        _CharacterAnim.SetBool("Idle", false); 
+        _CharacterRigidbody.AddForce(Vector3.forward * Mathf.Sqrt(jumpHeight * -0.8f * Physics.gravity.y), ForceMode.Impulse);
     }
 
 

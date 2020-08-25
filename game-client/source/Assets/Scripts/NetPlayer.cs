@@ -39,34 +39,34 @@ public class NetPlayer : MonoBehaviour
         {
             Quaternion r = Quaternion.Euler(rotation);
 
+            _body.MoveRotation(r);
             
-            transform.rotation = r;
-            _body.MovePosition(destination);
-
-            
-            if (jumping)
+            if (Vector3.Distance(destination, transform.position) > 0.01f)
             {
-                animator.SetBool("Runnig", false);
-                animator.SetBool("Walking", false);
-                animator.SetBool("Idle", false);
-                animator.SetBool("Jumping", true);
-            }
-            else
-            {
-                animator.SetBool("Jumping", false);
-                if (running)
+                _body.MovePosition(destination);
+                if (jumping)
                 {
-                    animator.SetBool("Runnig", true);
+                    animator.SetBool("Runnig", false);
                     animator.SetBool("Walking", false);
                     animator.SetBool("Idle", false);
                 }
                 else
                 {
-                    animator.SetBool("Runnig", false);
-                    animator.SetBool("Walking", walking);
-                    animator.SetBool("Idle", !walking);
+                    if (running)
+                    {
+                        animator.SetBool("Runnig", true);
+                        animator.SetBool("Walking", false);
+                        animator.SetBool("Idle", false);
+                    }
+                    else
+                    {
+                        animator.SetBool("Runnig", false);
+                        animator.SetBool("Walking", walking);
+                        animator.SetBool("Idle", !walking);
+                    }
                 }
             }
+
             //Label.text = NickName;
         }        
     }

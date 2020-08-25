@@ -201,6 +201,7 @@ func main() {
                 
                 n := rand.Int() % len(pInRoom)
                 games[i].Boss = pInRoom[n].Id
+                pInRoom[n].Role = "boss"
                 server.BroadcastToRoom("", games[i].Room, "gameStart", games[i])
             }
         }
@@ -364,7 +365,7 @@ func getPlayersAliveCount(roomName string) int {
     playersAlive := 0
     for i := range players {
         if players[i].Room == roomName {
-            if players[i].HealPoints > 0 {
+            if players[i].HealPoints > 0  && players[i].Role != "boss" {
                 playersAlive++
             }
         }
