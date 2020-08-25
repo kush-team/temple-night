@@ -1,0 +1,205 @@
+fileFormatVersion: 2
+guid: 458ce37c29b23044aa3c58ab1f5e639b
+ModelImporter:
+  serializedVersion: 19301
+  internalIDToNameTable:
+  - first:
+      74: -203655887218126122
+    second: mixamo.com
+  externalObjects: {}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: mixamo.com
+      takeName: mixamo.com
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 62
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: base
+        weight: 1
+      - path: base/Game_Hips
+        weight: 1
+      - path: base/Game_Hips/Game_LeftUpLeg
+        weight: 1
+      - path: base/Game_Hips/Game_LeftUpLeg/Game_LeftLeg
+        weight: 1
+      - path: base/Game_Hips/Game_LeftUpLeg/Game_LeftLeg/Game_LeftFoot
+        weight: 1
+      - path: base/Game_Hips/Game_RightUpLeg
+        weight: 1
+      - path: base/Game_Hips/Game_RightUpLeg/Game_RightLeg
+        weight: 1
+      - path: base/Game_Hips/Game_RightUpLeg/Game_RightLeg/Game_RightFoot
+        weight: 1
+      - path: base/Game_Hips/Game_Spine
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_LeftShoulder
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_LeftShoulder/Game_LeftArm
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_LeftShoulder/Game_LeftArm/Game_LeftForeArm
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_LeftShoulder/Game_LeftArm/Game_LeftForeArm/Game_LeftHand
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_LeftShoulder/Game_LeftArm/Game_LeftForeArm/Game_LeftHand/Game_LeftHandIndex1
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_LeftShoulder/Game_LeftArm/Game_LeftForeArm/Game_LeftHand/Game_LeftHandIndex1/Game_LeftHandIndex2
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_LeftShoulder/Game_LeftArm/Game_LeftForeArm/Game_LeftHand/Game_LeftHandMiddle1
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_LeftShoulder/Game_LeftArm/Game_LeftForeArm/Game_LeftHand/Game_LeftHandMiddle1/Game_LeftHandMiddle2
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_LeftShoulder/Game_LeftArm/Game_LeftForeArm/Game_LeftHand/Game_LeftHandThumb1
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_LeftShoulder/Game_LeftArm/Game_LeftForeArm/Game_LeftHand/Game_LeftHandThumb1/Game_LeftHandThumb2
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_RightShoulder
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_RightShoulder/Game_RightArm
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_RightShoulder/Game_RightArm/Game_RightForeArm
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_RightShoulder/Game_RightArm/Game_RightForeArm/Game_RightHand
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_RightShoulder/Game_RightArm/Game_RightForeArm/Game_RightHand/Game_RightHandIndex1
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_RightShoulder/Game_RightArm/Game_RightForeArm/Game_RightHand/Game_RightHandIndex1/Game_RightHandIndex2
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_RightShoulder/Game_RightArm/Game_RightForeArm/Game_RightHand/Game_RightHandMiddle1
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_RightShoulder/Game_RightArm/Game_RightForeArm/Game_RightHand/Game_RightHandMiddle1/Game_RightHandMiddle2
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_RightShoulder/Game_RightArm/Game_RightForeArm/Game_RightHand/Game_RightHandThumb1
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_RightShoulder/Game_RightArm/Game_RightForeArm/Game_RightHand/Game_RightHandThumb1/Game_RightHandThumb2
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_Spine2
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_Spine2/Game_Neck
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_Spine2/Game_Neck/Game_Head
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_Spine2/Game_Neck/Game_Head/glasses
+        weight: 1
+      - path: base/Game_Hips/Game_Spine/Game_Spine1/Game_Spine2/Game_Neck/Game_Head/hair04
+        weight: 1
+      - path: body
+        weight: 1
+      - path: clothing
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 3
+  humanoidOversampling: 1
+  avatarSetup: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

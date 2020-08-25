@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using UnityEngine.SceneManagement; 
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +17,7 @@ public class GameController : MonoBehaviour
     public Button JoinButton;
     public Button StartButton;
     public Button CloseErrorButton;
+    public Button RestartButton;
     
     public GameObject LoginUi;
     public GameObject LobbyUi;
@@ -37,6 +40,7 @@ public class GameController : MonoBehaviour
         JoinButton.onClick.AddListener(JoinGame);
         StartButton.onClick.AddListener(StartGame);
         CloseErrorButton.onClick.AddListener(CloseError);
+        RestartButton.onClick.AddListener(Restart);
         StartButton.interactable = false;
     }
 
@@ -55,7 +59,7 @@ public class GameController : MonoBehaviour
         {
             StartButton.interactable = true;
             StartButton.GetComponentInChildren<Text>().text = "Start Game";
-        }
+        }    
     }
 
     public void StartGame() 
@@ -94,8 +98,6 @@ public class GameController : MonoBehaviour
 
     public void Restart() 
     {
-        //Player.SetActive(false);
-        //FinishUi.SetActive(false);
-        //LobbyUi.SetActive(false);
+        SceneManager.LoadScene("Game");
     }
 }

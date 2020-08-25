@@ -16,13 +16,17 @@ public class PlayerController : MonoBehaviour
      bool _isRunning;
      bool _isJumping;
      float jumpHeight = 2.5f;     
-     float groundDistance = 0.1f;
+     float groundDistance = 0.05f;
      [SerializeField]
      public Camera VCam;
 
 
      private GameObject proximatePlayer;
  
+
+     private bool coolingdown = false;
+     private float cooldownCounter = 3f;
+
  
      void Start()
      {
@@ -33,46 +37,48 @@ public class PlayerController : MonoBehaviour
  
      void Update()
      {
-         CharacterActions();
+        if (!_netWorkEntity.isDead())
+            CharacterActions();
      }
  
      void FixedUpdate()
      {
-         CharacterMovement();
+        if (!_netWorkEntity.isDead())
+            CharacterMovement();
      }
  
      void CharacterMovement()
      {
-  
-         float h = Input.GetAxis("Horizontal");
-         float v = Input.GetAxis("Vertical");
 
-         _CharacterDirection.Set(h, 0, v);
-         realativedir = VCam.transform.TransformDirection(_CharacterDirection);
-         realativedir.y = 0f;
-         realativedir.Normalize();
- 
-         bool _IsHorizontalChange = !Mathf.Approximately(h, 0f);
-         bool _IsVerticalChange = !Mathf.Approximately(v, 0);
-         _IsWalking = _IsHorizontalChange || _IsVerticalChange;
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
+
+        _CharacterDirection.Set(h, 0, v);
+        realativedir = VCam.transform.TransformDirection(_CharacterDirection);
+        realativedir.y = 0f;
+        realativedir.Normalize();
+
+        bool _IsHorizontalChange = !Mathf.Approximately(h, 0f);
+        bool _IsVerticalChange = !Mathf.Approximately(v, 0);
+        _IsWalking = _IsHorizontalChange || _IsVerticalChange;
+
+        Vector3 _DesairdForward = Vector3.RotateTowards(this.transform.forward, realativedir, TurnSpeed * Time.deltaTime, 0);
+        _CharacterRotation = Quaternion.LookRotation(_DesairdForward); 
+
+        rot = VCam.transform.rotation;
+        rot.x = 0;
+        rot.z = 0;
+        transform.rotation = rot;
 
 
-         Vector3 _DesairdForward = Vector3.RotateTowards(this.transform.forward, realativedir, TurnSpeed * Time.deltaTime, 0);
-         _CharacterRotation = Quaternion.LookRotation(_DesairdForward); 
- 
-         rot = VCam.transform.rotation;
-         rot.x = 0;
-         rot.z = 0;
-         transform.rotation = rot;
-         
- 
-         Vector3 destination = _CharacterRigidbody.position + realativedir * speed * Time.deltaTime;
-         _CharacterRigidbody.MovePosition(destination);
+        Vector3 destination = _CharacterRigidbody.position + realativedir * speed * Time.deltaTime;
 
-         Network.Move(transform.rotation.eulerAngles, destination, _IsWalking, _isRunning, _isJumping);
+        _CharacterRigidbody.MovePosition(destination);
+
+        Network.Move(transform.rotation.eulerAngles, destination, _IsWalking, _isRunning, _isJumping);
 
         _CharacterAnim.SetBool("Walking", _IsWalking);
-        _CharacterAnim.SetBool("Runnig", _isRunning);
+        _CharacterAnim.SetBool("Runnig", _IsWalking && _isRunning);
         _CharacterAnim.SetBool("Idle", !_IsWalking);
  
      }
@@ -80,12 +86,29 @@ public class PlayerController : MonoBehaviour
      void CharacterActions()
      {
  
-        if (Input.GetKey(KeyCode.E) ||  Input.GetKey("joystick 1 button 2"))
+        if (Input.GetKey(KeyCode.F) ||  Input.GetKey("joystick 1 button 3"))
         {
+            _CharacterAnim.SetBool("Hitting", true);
             if (proximatePlayer)
             {
-                //TO-DO  NetWork.HitPlayer(proximatePlayer.GetComponent<NetworkEntity>().id);
+                if (!coolingdown) 
+                {
+                    Network.Hit(proximatePlayer.GetComponent<NetworkEntity>().id);
+                    coolingdown = true;
+                    cooldownCounter = 3f;
+                } 
             }
+        }
+        else
+        {
+            _CharacterAnim.SetBool("Hitting", false);
+        }
+
+        cooldownCounter -= Time.deltaTime;
+
+        if (cooldownCounter <= 0) 
+        {
+            coolingdown = false;
         }
 
         if (Input.GetKey(KeyCode.LeftShift) ||  Input.GetKey("joystick 1 button 7"))
@@ -115,6 +138,23 @@ public class PlayerController : MonoBehaviour
 
 
 
+
+    public void Hit()
+    {
+        _CharacterAnim.SetBool("Walking", false);
+        _CharacterAnim.SetBool("Runnig", false);
+        _CharacterAnim.SetBool("Idle", false); 
+    }
+
+
+    public void Die()
+    {
+        _CharacterRigidbody.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ |  RigidbodyConstraints.FreezeRotationX;
+        _CharacterAnim.SetTrigger("Die");
+        _CharacterAnim.SetBool("Walking", false);
+        _CharacterAnim.SetBool("Runnig", false);
+        _CharacterAnim.SetBool("Idle", false);        
+    }
 
     public void OnCollisionEnter(Collision collision)
     {

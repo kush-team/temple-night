@@ -77,6 +77,8 @@ public class Spawner : MonoBehaviour {
             playerObject.AddComponent<PlayerController>();
             playerObject.name = "Me";
             playerObject.GetComponent<NetworkEntity>().id = playerId;
+            playerObject.GetComponent<NetworkEntity>().nickName = playerName;
+            playerObject.GetComponent<NetworkEntity>().healPoints = 100f;
             playerObject.GetComponent<PlayerController>().VCam = VCam;
 
             if (bossId == playerId) 
@@ -110,6 +112,8 @@ public class Spawner : MonoBehaviour {
                 netPlayer.AddComponent<NetPlayer>();
                 netPlayer.GetComponent<NetworkEntity>().id = entry.Key;
                 netPlayer.GetComponent<NetworkEntity>().nickName = entry.Value;
+                netPlayer.GetComponent<NetworkEntity>().healPoints = 100f;
+                
                 if (bossId == entry.Key) 
                 {
                     netPlayer.GetComponent<NetworkEntity>().role = "boss";

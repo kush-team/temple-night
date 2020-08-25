@@ -50,6 +50,17 @@ type Player struct {
     Pickeables[]    *Pickeable      `json:"pickeables"`
 }
 
+type HitEvent struct {
+    Id              string          `json:"id"`
+    Hitted          string          `json:"hitted"`
+    HealPoints      float32         `json:"healPoints"`
+}
+type ToggleEvent struct {
+    Id              string          `json:"id"`
+    Toggle          bool            `json:"toggle"`
+}
+
+
 type PickEvent struct {
     Id              string          `json:"id"`
     PickedBy        string          `json:"pickedBy"`
@@ -105,7 +116,6 @@ func main() {
     }
 
     server.OnConnect("/", func(s socketio.Conn) error {
-        fmt.Println("Player Enter")
         uid := uuid.Must(uuid.NewV4())
         players = append(players, &Player{Id: uid.String(), SID: s.ID(), Role: "player", HealPoints: 100, Pickeables: []*Pickeable{}})
         
@@ -120,7 +130,6 @@ func main() {
 
     server.OnEvent("/", "join", func(s socketio.Conn, msg RoomJoin) {
         dat := make(map[string]interface{})
-        fmt.Printf("Player Join or Create Game %s", msg.Room)
 
         var currentPlayerIndex = -1
         for i := range players {
@@ -185,7 +194,6 @@ func main() {
 
     
     server.OnEvent("/", "gameStart", func(s socketio.Conn, msg Game) {
-        fmt.Println("Game Start")
         for i := range games {
             if games[i].Id == msg.Id {
                 games[i].Started = true
@@ -199,7 +207,6 @@ func main() {
     })
 
     server.OnEvent("/", "gameFinish", func(s socketio.Conn, msg Game) {
-        fmt.Println("Game End")
         for i := range games {
             if games[i].Id == msg.Id {
                 games[i].Ended = true
@@ -208,7 +215,29 @@ func main() {
         server.BroadcastToRoom("", msg.Room, "gameFinish", msg)
     })
 
+    server.OnEvent("/", "hit", func(s socketio.Conn, msg HitEvent) {
+        room := ""
+        for i := range players {
+            if players[i].SID == s.ID() {
+                room = players[i].Room
+                players[i].HealPoints -= 35
+                msg.HealPoints = players[i].HealPoints
+                if (players[i].HealPoints <= 0) {
+                    server.BroadcastToRoom("", room, "die", msg)
+                } else {
+                    server.BroadcastToRoom("", room, "hit", msg)
+                }
 
+                if (getPlayersAliveCount(room) <= 0) {
+                    for i := range games {
+                        if games[i].Room == room {
+                            server.BroadcastToRoom("", room, "gameFinish", games[i])
+                        }
+                    }                     
+                }
+            }
+        }
+    })
 
     server.OnEvent("/", "pick", func(s socketio.Conn, msg PickEvent) {
         room := ""
@@ -216,19 +245,32 @@ func main() {
             if players[i].SID == s.ID() {
                 msg.PickedBy = players[i].Id
                 room = players[i].Room
-/*                
                 for i := range games {
                     if games[i].Room == room {
-                        players[i].Pickeables = append(players[i].Pickeables, getPickeableById(games[i].Pickeables, msg.Id))
+                        p := getPickeableById(games[i].Pickeables, msg.Id)
+                        p.Picked = true
+                        if (getAvailablePickleablesCount(games[i].Pickeables) < 1) {
+
+                            server.BroadcastToRoom("", room, "gameFinish", games[i])
+                        }
                     }
                 }          
-*/
             }
         }
-
         server.BroadcastToRoom("", room, "picked", msg)
     })    
 
+
+    server.OnEvent("/", "toggle", func(s socketio.Conn, msg ToggleEvent) {
+        room := ""
+        for i := range players {
+            if players[i].SID == s.ID() {
+                room = players[i].Room
+                msg.Toggle = !msg.Toggle
+                server.BroadcastToRoom("", room, "toggle", msg)
+            }
+        }
+    })  
 
     server.OnEvent("/", "updatePosition", func(s socketio.Conn, msg UnityVector3) {
         room := ""
@@ -304,6 +346,32 @@ func getPickeableById(pickeables []* Pickeable, id string) *Pickeable {
 
     return p
 }
+
+func getAvailablePickleablesCount(pickeables []* Pickeable) int {
+    var c = 0
+
+    for i := range pickeables {
+        if pickeables[i].Picked == false {
+            c++;
+        }
+    }  
+
+    return c
+}
+
+
+func getPlayersAliveCount(roomName string) int {
+    playersAlive := 0
+    for i := range players {
+        if players[i].Room == roomName {
+            if players[i].HealPoints > 0 {
+                playersAlive++
+            }
+        }
+    }    
+    return playersAlive
+}
+
 
 func removePlayerByIndex(s []*Player, index int) []*Player {
     return append(s[:index], s[index+1:]...)

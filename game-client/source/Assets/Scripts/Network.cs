@@ -29,6 +29,9 @@ public class Network : MonoBehaviour
         socket.On("picked", OnPicked);
         socket.On("error", OnError);
         socket.On("close", OnClose);
+        socket.On("hit", OnHit);
+        socket.On("die", OnDie);
+        socket.On("toggle", OnToggle);
     }
     
     private void OnError(SocketIOEvent obj)
@@ -62,7 +65,42 @@ public class Network : MonoBehaviour
         {
             spawner.SpawnPickeable(pickable["id"].str, pickable["type"].str, pickable["spot"].n, pickable["picked"].b);
         }
-    }    
+    }   
+
+    private void OnToggle(SocketIOEvent obj)
+    {
+        var toggleable = GameObject.Find(obj.data["id"].str);
+        if (toggleable)
+            toggleable.GetComponent<Toggleable>().SetToggle( obj.data["toggle"].b );
+    }
+
+    private void OnHit(SocketIOEvent obj)
+    {
+        var player = spawner.GetPlayer(obj.data["hitted"].str);
+        player.GetComponent<NetworkEntity>().healPoints = obj.data["healPoints"].n;     
+        if (spawner.GetLocalPlayerId() == obj.data["hitted"].str) 
+        {
+            player.GetComponent<PlayerController>().Hit();     
+        } 
+        else
+        {
+            player.GetComponent<NetPlayer>().Hit();     
+        }
+    }
+
+    private void OnDie(SocketIOEvent obj)
+    {
+        var player = spawner.GetPlayer(obj.data["hitted"].str);
+        player.GetComponent<NetworkEntity>().healPoints = obj.data["healPoints"].n;     
+        if (spawner.GetLocalPlayerId() == obj.data["hitted"].str) 
+        {
+            player.GetComponent<PlayerController>().Die();     
+        } 
+        else
+        {
+            player.GetComponent<NetPlayer>().Die();     
+        }
+    }
 
     private void OnLeave(SocketIOEvent obj)
     {
@@ -229,5 +267,21 @@ public class Network : MonoBehaviour
         jsonObject.AddField("winner", winner);
         if (socket.IsConnected) socket.Emit("gameFinish", jsonObject); 
     }
+
+
+    public static void Hit(string hitted) 
+    {
+        JSONObject jsonObject = new JSONObject(JSONObject.Type.OBJECT);
+        jsonObject.AddField("hitted", hitted);
+        if (socket.IsConnected) socket.Emit("hit", jsonObject); 
+    }    
+
+    public static void Toggle(string toggleName, bool toggle) 
+    {
+        JSONObject jsonObject = new JSONObject(JSONObject.Type.OBJECT);
+        jsonObject.AddField("id", toggleName);
+        jsonObject.AddField("toggle", toggle);
+        if (socket.IsConnected) socket.Emit("toggle", jsonObject); 
+    }    
 
 }
