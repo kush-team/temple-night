@@ -141,7 +141,7 @@ public class Network : MonoBehaviour
             var player = spawner.GetPlayer(obj.data["id"].str);
 
 
-            player.GetComponent<NetPlayer>().walking = obj.data["walking"].b;
+            player.GetComponent<NetPlayer>().hitting = obj.data["hitting"].b;
             player.GetComponent<NetPlayer>().running = obj.data["running"].b;
             player.GetComponent<NetPlayer>().jumping = obj.data["jumping"].b;
             player.GetComponent<NetPlayer>().destination = position;     
@@ -228,12 +228,12 @@ public class Network : MonoBehaviour
     }
 
 
-    public static void Move(Vector3 rotation, Vector3 destination, bool walking, bool running, bool jumping)
+    public static void Move(Vector3 rotation, Vector3 destination, bool hitting, bool running, bool jumping)
     {
 		JSONObject jsonObject = new JSONObject(JSONObject.Type.OBJECT);
 		jsonObject.AddField("r", Network.VectorToJson(rotation));
 		jsonObject.AddField("d", Network.VectorToJson(destination));
-        jsonObject.AddField("walking", walking);
+        jsonObject.AddField("hitting", hitting);
         jsonObject.AddField("running", running);
         jsonObject.AddField("jumping", jumping);
 		if (socket.IsConnected) socket.Emit("move", jsonObject);

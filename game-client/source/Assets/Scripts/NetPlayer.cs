@@ -7,7 +7,7 @@ public class NetPlayer : MonoBehaviour
 {
     public Vector3 destination;
     public Vector3 rotation;
-    public bool walking;
+    public bool hitting;
     public bool running;
     public bool jumping;
     //public TextMeshPro Label;
@@ -17,6 +17,7 @@ public class NetPlayer : MonoBehaviour
     private Rigidbody _body;
     private Animator animator;
     private NetworkEntity _netWorkEntity;
+    private float distance = 0.0f;
 
 
     void Start()
@@ -24,14 +25,7 @@ public class NetPlayer : MonoBehaviour
         _body = GetComponent<Rigidbody>();
         _netWorkEntity = GetComponent<NetworkEntity>();
         animator = GetComponent<Animator>();
-        walking = false;
     }
-
-    void Update()
-    {
-
-    }
-
 
     void FixedUpdate() 
     {
@@ -40,32 +34,20 @@ public class NetPlayer : MonoBehaviour
             Quaternion r = Quaternion.Euler(rotation);
 
             _body.MoveRotation(r);
-            
-            if (Vector3.Distance(destination, transform.position) > 0.01f)
+            distance = Vector3.Distance(destination, transform.position);
+
+            if (distance > 0.01f)
             {
                 _body.MovePosition(destination);
-                if (jumping)
-                {
-                    animator.SetBool("Runnig", false);
-                    animator.SetBool("Walking", false);
-                    animator.SetBool("Idle", false);
-                }
-                else
-                {
-                    if (running)
-                    {
-                        animator.SetBool("Runnig", true);
-                        animator.SetBool("Walking", false);
-                        animator.SetBool("Idle", false);
-                    }
-                    else
-                    {
-                        animator.SetBool("Runnig", false);
-                        animator.SetBool("Walking", walking);
-                        animator.SetBool("Idle", !walking);
-                    }
-                }
             }
+
+            animator.SetBool("Runnig", running);
+            animator.SetFloat("Distance", distance);
+            if (jumping)
+                animator.SetTrigger("Jumping");
+
+            if (hitting)
+                animator.SetTrigger("HItting");
 
             //Label.text = NickName;
         }        
@@ -73,16 +55,15 @@ public class NetPlayer : MonoBehaviour
 
     public void Hit()
     {
-        
+        animator.SetTrigger("Hitted");
     }
 
 
     public void Die()
     {
         _body.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ |  RigidbodyConstraints.FreezeRotationX;
-        animator.SetBool("Walking", false);
         animator.SetBool("Runnig", false);
-        animator.SetBool("Idle", false);           
+        animator.SetFloat("Distance", 0f);        
         animator.SetTrigger("Die");
     }    
 }

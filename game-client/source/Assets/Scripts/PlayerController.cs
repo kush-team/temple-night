@@ -11,12 +11,14 @@ public class PlayerController : MonoBehaviour
      Rigidbody _CharacterRigidbody;
      NetworkEntity _netWorkEntity;
      [SerializeField]
-     float TurnSpeed = 2, speed = 2;
+     float TurnSpeed = 10, speed = 2;
      bool _IsWalking;
+     bool _IsHitting;
      bool _isRunning;
      bool _isJumping;
      float jumpHeight = 2.5f;     
-     float groundDistance = 0.05f;
+     float groundDistance = 0.5f;
+     float distance = 0.00f;
      [SerializeField]
      public Camera VCam;
 
@@ -27,6 +29,8 @@ public class PlayerController : MonoBehaviour
      private bool coolingdown = false;
      private float cooldownCounter = 3f;
 
+     private bool coolingdownFreeze = false;
+     private float cooldownCounterFreeze = 3f;
  
      void Start()
      {
@@ -43,7 +47,7 @@ public class PlayerController : MonoBehaviour
  
      void FixedUpdate()
      {
-        if (!_netWorkEntity.isDead())
+        if (!_netWorkEntity.isDead() && !coolingdownFreeze)
             CharacterMovement();
      }
  
@@ -72,36 +76,39 @@ public class PlayerController : MonoBehaviour
 
 
         Vector3 destination = _CharacterRigidbody.position + realativedir * speed * Time.deltaTime;
+        distance = Vector3.Distance(destination, _CharacterRigidbody.position);
 
         _CharacterRigidbody.MovePosition(destination);
 
-        Network.Move(transform.rotation.eulerAngles, destination, _IsWalking, _isRunning, _isJumping);
+        Network.Move(transform.rotation.eulerAngles, destination, _IsHitting, _isRunning, _isJumping);
 
-        _CharacterAnim.SetBool("Walking", _IsWalking);
-        _CharacterAnim.SetBool("Runnig", _IsWalking && _isRunning);
-        _CharacterAnim.SetBool("Idle", !_IsWalking);
- 
+        _CharacterAnim.SetFloat("Distance", distance);
+        _CharacterAnim.SetBool("Runnig", _isRunning);
+
      }
  
      void CharacterActions()
      {
  
-        if (Input.GetKey(KeyCode.F) ||  Input.GetKey("joystick 1 button 3"))
+        if ((Input.GetKey(KeyCode.F) ||  Input.GetKey("joystick 1 button 3")) && this.IsGrounded())
         {
-            _CharacterAnim.SetBool("Hitting", true);
-            if (proximatePlayer)
+            if (!coolingdown) 
             {
-                if (!coolingdown) 
+                _CharacterAnim.SetTrigger("HItting");
+                _IsHitting = true;
+                coolingdown = true;
+                cooldownCounter = 3f;
+
+                if (proximatePlayer)
                 {
                     Network.Hit(proximatePlayer.GetComponent<NetworkEntity>().id);
-                    coolingdown = true;
-                    cooldownCounter = 3f;
                 } 
+
             }
-        }
-        else
+        } 
+        else 
         {
-            _CharacterAnim.SetBool("Hitting", false);
+            _IsHitting = false;
         }
 
         cooldownCounter -= Time.deltaTime;
@@ -110,6 +117,14 @@ public class PlayerController : MonoBehaviour
         {
             coolingdown = false;
         }
+
+
+        cooldownCounterFreeze -= Time.deltaTime;
+
+        if (cooldownCounterFreeze <= 0) 
+        {
+            coolingdownFreeze = false;
+        }        
 
         if (Input.GetKey(KeyCode.LeftShift) ||  Input.GetKey("joystick 1 button 7"))
         {
@@ -124,8 +139,9 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetButtonDown("Jump") && this.IsGrounded())
         {
+            _CharacterRigidbody.AddForce(Vector3.up * Mathf.Sqrt(jumpHeight * -1f * Physics.gravity.y), ForceMode.VelocityChange);
+            _CharacterAnim.SetTrigger("Jumping");
             _isJumping = true;
-            _CharacterRigidbody.AddForce(Vector3.up * Mathf.Sqrt(jumpHeight * -0.8f * Physics.gravity.y), ForceMode.VelocityChange);
         }
         else
         {
@@ -141,7 +157,9 @@ public class PlayerController : MonoBehaviour
 
     public void Hit()
     {
-        _CharacterRigidbody.AddForce(Vector3.forward * Mathf.Sqrt(jumpHeight * -0.8f * Physics.gravity.y), ForceMode.Impulse);
+        _CharacterAnim.SetTrigger("Hitted");
+        coolingdownFreeze = true;
+        cooldownCounterFreeze = 3f;        
     }
 
 
@@ -149,9 +167,9 @@ public class PlayerController : MonoBehaviour
     {
         _CharacterRigidbody.constraints = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ |  RigidbodyConstraints.FreezeRotationX;
         _CharacterAnim.SetTrigger("Die");
-        _CharacterAnim.SetBool("Walking", false);
         _CharacterAnim.SetBool("Runnig", false);
-        _CharacterAnim.SetBool("Idle", false);        
+        _CharacterAnim.SetFloat("Distance", 0f);
+
     }
 
     public void OnCollisionEnter(Collision collision)

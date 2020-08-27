@@ -32,7 +32,7 @@ type UnityMovement struct {
     Id              string          `json:"id"`    
     R               UnityVector3    `json:"r"`
     D               UnityVector3    `json:"d"`
-    Walking         bool            `json:"walking"`
+    Hitting         bool            `json:"hitting"`
     Running         bool            `json:"running"`    
     Jumping         bool            `json:"jumping"`    
 }
@@ -201,8 +201,14 @@ func main() {
                 
                 n := rand.Int() % len(pInRoom)
                 games[i].Boss = pInRoom[n].Id
-                pInRoom[n].Role = "boss"
+                for i := range players {
+                    if players[i].Id == pInRoom[n].Id {
+                        players[i].Role = "boss"
+                        break
+                    }
+                }                
                 server.BroadcastToRoom("", games[i].Room, "gameStart", games[i])
+                break
             }
         }
     })
@@ -219,7 +225,7 @@ func main() {
     server.OnEvent("/", "hit", func(s socketio.Conn, msg HitEvent) {
         room := ""
         for i := range players {
-            if players[i].SID == s.ID() {
+            if players[i].Id == msg.Hitted {
                 room = players[i].Room
                 players[i].HealPoints -= 35
                 msg.HealPoints = players[i].HealPoints
@@ -228,14 +234,15 @@ func main() {
                 } else {
                     server.BroadcastToRoom("", room, "hit", msg)
                 }
-
                 if (getPlayersAliveCount(room) <= 0) {
                     for i := range games {
                         if games[i].Room == room {
+                            games[i].Winner = "boss"
                             server.BroadcastToRoom("", room, "gameFinish", games[i])
                         }
                     }                     
                 }
+                break
             }
         }
     })
@@ -251,7 +258,7 @@ func main() {
                         p := getPickeableById(games[i].Pickeables, msg.Id)
                         p.Picked = true
                         if (getAvailablePickleablesCount(games[i].Pickeables) < 1) {
-
+                            games[i].Winner = "boys"
                             server.BroadcastToRoom("", room, "gameFinish", games[i])
                         }
                     }
@@ -365,7 +372,7 @@ func getPlayersAliveCount(roomName string) int {
     playersAlive := 0
     for i := range players {
         if players[i].Room == roomName {
-            if players[i].HealPoints > 0  && players[i].Role != "boss" {
+            if players[i].HealPoints > 0  && players[i].Role == "player" {
                 playersAlive++
             }
         }

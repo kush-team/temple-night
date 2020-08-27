@@ -10,7 +10,7 @@ public class ResetPositionController : MonoBehaviour
 		
 		var backToPosition = Vector3.zero;
 		
-		backToPosition.y = 10;
+		backToPosition.y = 0.5f;
 
 		player.transform.position = backToPosition;
 	}

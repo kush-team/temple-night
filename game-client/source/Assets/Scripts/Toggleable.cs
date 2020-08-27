@@ -33,8 +33,6 @@ public class Toggleable : MonoBehaviour
 	            {
 	                if (!coolingdown) 
 	                {
-	                    coolingdown = true;
-	                    cooldownCounter = 3f;
 						Network.Toggle(this.name, this.toggle);
 	                } 
 	            }
@@ -59,6 +57,8 @@ public class Toggleable : MonoBehaviour
 	{
 		this.toggle = toggle;
 		animator.SetBool("open", toggle);
+        coolingdown = true;
+        cooldownCounter = 3f;		
 	}
 
 
